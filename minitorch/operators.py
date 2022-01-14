@@ -92,10 +92,10 @@ def relu(x):
     Returns:
         float : relu value
     """
-    if x > 0:
+    if x > 0.0:
         return x
     else:
-        return 0
+        return 0.0
 
 
 EPS = 1e-6
@@ -128,10 +128,10 @@ def inv_back(x, d):
 
 def relu_back(x, d):
     r"If :math:`f = relu` compute d :math:`d \times f'(x)`"
-    if x > 0:
+    if x > 0.0:
         return d
     else:
-        return 0
+        return 0.0
 
 
 # ## Task 0.3
