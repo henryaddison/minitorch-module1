@@ -46,6 +46,9 @@ def test_simple(a, b):
     assert_close(c.data, minitorch.operators.relu(a) + minitorch.operators.relu(b))
 
     # Add others if you would like...
+    # Scalar operators work even if come second
+    c = 5 + Scalar(a)
+    assert_close(c.data, 5+a)
 
 
 one_arg, two_arg, _ = MathTestVariable._tests()
