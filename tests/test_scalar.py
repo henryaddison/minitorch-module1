@@ -31,6 +31,7 @@ def test_central_diff():
 
 
 @given(small_floats, small_floats)
+@pytest.mark.task1_2
 def test_simple(a, b):
     # Simple add
     c = Scalar(a) + Scalar(b)
