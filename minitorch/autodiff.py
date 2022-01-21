@@ -190,8 +190,7 @@ class History:
         Returns:
             list of numbers : a derivative with respect to `inputs`
         """
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return self.last_fn.chain_rule(self.ctx, self.inputs, d_output)
 
 
 class FunctionBase:
@@ -295,8 +294,54 @@ def topological_sort(variable):
         list of Variables : Non-constant Variables in topological order
                             starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+
+    # L ← Empty list that will contain the sorted nodes
+    # while exists nodes without a permanent mark do
+    #     select an unmarked node n
+    #     visit(n)
+
+    # function visit(node n)
+    #     if n has a permanent mark then
+    #         return
+    #     if n has a temporary mark then
+    #         stop   (not a DAG)
+
+    #     mark n with a temporary mark
+
+    #     for each node m with an edge from n to m do
+    #         visit(m)
+
+    #     remove temporary mark from n
+    #     mark n with a permanent mark
+    #     add n to head of L
+
+    visited_perm = []
+    visited_temp = []
+    output = []
+
+    def visit(n):
+        # Don't do anything with constants
+        if is_constant(n):
+            return
+        if n.unique_id in visited_perm:
+            return
+        elif n.unique_id in visited_temp:
+            raise(RuntimeError("Not a DAG"))
+
+        visited_temp.append(n.unique_id)
+
+        if n.is_leaf():
+            pass
+        else:
+            for input in n.history.inputs:
+                visit(input)
+        visited_temp.remove(n.unique_id)
+        visited_perm.append(n.unique_id)
+        output.insert(0,n)
+
+    visit(variable)
+
+    return output
 
 
 def backpropagate(variable, deriv):
@@ -312,5 +357,15 @@ def backpropagate(variable, deriv):
 
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+    l = topological_sort(variable)
+
+    derivs = {variable.unique_id: deriv}
+    for v in l:
+        d_output = derivs[v.unique_id]
+        if v.is_leaf():
+            v.accumulate_derivative(d_output)
+        else:
+            for input, d in v.history.backprop_step(d_output):
+                if input.unique_id not in derivs: derivs[input.unique_id] = 0.0
+                derivs[input.unique_id] += d
+    return
