@@ -272,9 +272,12 @@ class FunctionBase:
         """
         # Tip: Note when implementing this function that
         # cls.backward may return either a value or a tuple.
-        # TODO: Implement for Task 1.3.
-        raise NotImplementedError('Need to implement for Task 1.3')
-
+        output = []
+        derivs = cls.backward(ctx, d_output)
+        # ensure derivs is a tuple (as might be a single value)
+        if type(derivs) != tuple:
+            derivs = (derivs,)
+        return [(input, deriv) for input, deriv in zip(inputs, derivs) if not(is_constant(input))]
 
 # Algorithms for backpropagation
 
