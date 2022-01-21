@@ -1,4 +1,5 @@
 import minitorch
+from minitorch.autodiff import topological_sort
 import pytest
 from minitorch import History
 
@@ -97,6 +98,24 @@ def test_chain_rule4():
 
 # Main tests are in test_scalar.py
 
+
+@pytest.mark.task1_4
+def test_top_sort_simple():
+    input_var1 = minitorch.Scalar(0, name="input1")
+    input_var2 = minitorch.Scalar(0, name="input2")
+    var1 = Function1.apply(0, input_var1)
+    var2 = Function1.apply(var1, input_var2)
+    assert list(map(lambda x: x.name, topological_sort(var2))) == list(map(lambda x: x.name, [var2, input_var2, var1, input_var1]))
+
+
+@pytest.mark.task1_4
+def test_top_sort():
+    input_var1 = minitorch.Scalar(0, name="input1")
+    input_var2 = minitorch.Scalar(0, name="input2")
+    hvar1 = Function1.apply(0, input_var1)
+    hvar2 = Function1.apply(hvar1, input_var2)
+    var = Function1.apply(hvar1, hvar2)
+    assert list(map(lambda x: x.name, topological_sort(var))) == list(map(lambda x: x.name, [var, hvar2, input_var2, hvar1, input_var1]))
 
 @pytest.mark.task1_4
 def test_backprop1():
